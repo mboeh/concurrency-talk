@@ -1,0 +1,21 @@
+li {
+  list-style: none;
+  margin-left: -1em !important;
+}
+
+table {
+  margin-left: 25%;
+  margin-right: 25%;
+  width: 50%;
+}
+
+table th, table td {
+  padding: 10px;
+  font-size: 125%;
+  border-bottom: solid black 1px;
+  text-align: center;
+}
+
+table tr td:first-child {
+  text-align: left;
+}

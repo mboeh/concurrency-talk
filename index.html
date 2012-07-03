@@ -1,0 +1,328 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <title>Concurrency and Parallelism in Ruby</title>
+
+  <meta name="viewport" content="width=device-width"/>
+
+  <link rel="stylesheet" href="./css/reset.css" type="text/css"/>
+  <link rel="stylesheet" href="./css/showoff.css" type="text/css"/>
+
+  <script type="text/javascript" src="./js/jquery-1.4.2.min.js"></script>
+  <script type="text/javascript" src="./js/jquery.cycle.all.js"></script>
+	<script type="text/javascript" src="./js/jquery-print.js"></script>
+  <script type="text/javascript" src="./js/jquery.batchImageLoad.js"></script>
+
+  <script type="text/javascript" src="./js/jquery.doubletap-0.1.js"></script>
+
+  <script type="text/javascript" src="./js/fg.menu.js"></script>
+  <script type="text/javascript" src="./js/showoff.js"></script>
+  <script type="text/javascript" src="./js/jTypeWriter.js"> </script>
+  <script type="text/javascript" src="./js/sh_main.min.js"></script>
+  <script type="text/javascript" src="./js/core.js"></script>
+  <script type="text/javascript" src="./js/showoffcore.js"></script>
+  <script type="text/javascript" src="./js/coffee-script.js"></script>
+
+  <link type="text/css" href="./css/fg.menu.css" media="screen" rel="stylesheet" />
+  <link type="text/css" href="./css/theme/ui.all.css" media="screen" rel="stylesheet" />
+  <link type="text/css" href="./css/sh_style.css" rel="stylesheet" >
+
+  
+    <link rel="stylesheet" href="file/prez.css" type="text/css"/>
+  
+
+  
+
+  <script type="text/javascript">
+  $(function(){
+      setupPreso(false, './');
+  });
+  </script>
+
+</head>
+
+<body>
+
+<a tabindex="0" href="#search-engines" class="fg-button fg-button-icon-right ui-widget ui-state-default ui-corner-all" id="navmenu"><span class="ui-icon ui-icon-triangle-1-s"></span>slides</a>
+<div id="navigation" class="hidden"></div>
+
+<div id="help">
+  <table>
+    <tr><td class="key">z, ?</td><td>toggle help (this)</td></tr>
+    <tr><td class="key">space, &rarr;</td><td>next slide</td></tr>
+    <tr><td class="key">shift-space, &larr;</td><td>previous slide</td></tr>
+    <tr><td class="key">d</td><td>toggle debug mode</td></tr>
+    <tr><td class="key">## &lt;ret&gt;</td><td>go to slide #</td></tr>
+    <tr><td class="key">c, t</td><td>table of contents (vi)</td></tr>
+    <tr><td class="key">f</td><td>toggle footer</td></tr>
+    <tr><td class="key">r</td><td>reload slides</td></tr>
+    <tr><td class="key">n</td><td>toggle notes</td></tr>
+    <tr><td class="key">p</td><td>run preshow</td></tr>
+  </table>
+</div>
+
+<div class="buttonNav">
+  <input type="submit" onClick="prevStep();" value="prev"/>
+  <input type="submit" onClick="nextStep();" value="next"/>
+</div>
+
+<div id="preso">loading presentation...</div>
+<div id="footer">
+  <span id="slideInfo"></span>
+  <span id="debugInfo"></span>
+  <span id="notesInfo"></span>
+</div>
+
+<div id="slides" class="offscreen" style="display:none;">
+<div class="slide" data-transition="none"><div class="content" ref="one/01_slide/1">
+<h1>Concurrency and Parallelism in Ruby</h1>
+
+<h2>Past, Present, and Future</h2></div>
+</div><div class="slide" data-transition="none"><div class="content smbullets incremental" ref="one/01_slide/2">
+<h1>What you've heard</h1>
+
+<p>"Ruby threading sucks because..."</p>
+
+<ul>
+<li>1.8 green threads are useless</li>
+<li>MRI 1.9 GIL ruins performance</li>
+<li>Threading is too hard anyway</li>
+</ul>
+</div>
+</div><div class="slide" data-transition="none"><div class="content smbullets" ref="one/01_slide/3">
+<h1>Why threads?</h1>
+
+<p>Certain types of work are better suited for threads:</p>
+
+<ul>
+<li>Fast</li>
+<li>Homogenous</li>
+<li>Isolated</li>
+<li>CPU-bound</li>
+</ul>
+
+
+<p class="notes">Fast: jobs complete in less than a second or so. Homogenous: jobs take around the same time to complete. Isolated: work can be completed without any shared state. CPU-bound: versus IO-bound.</p></div>
+</div><div class="slide" data-transition="none"><div class="content smbullets" ref="one/01_slide/4">
+<h1>Why threads?</h1>
+
+<p>Applications more suited for threads:</p>
+
+<ul>
+<li>Web servers</li>
+<li>Background job queues</li>
+<li>Parallel processing</li>
+</ul>
+</div>
+</div><div class="slide" data-transition="none"><div class="content subsection" ref="one/01_slide/5">
+<h1>Concurrency Past</h1></div>
+</div><div class="slide" data-transition="none"><div class="content smbullets incremental" ref="one/01_slide/6">
+<h2>Ruby 1.8: Green Threads</h2>
+
+<ul>
+<li>Implemented in Ruby interpreter</li>
+<li>Low overhead</li>
+<li>Only one CPU</li>
+<li>Yields during IO</li>
+</ul>
+
+
+<p class="notes">Ruby threading got ignored because of the performance issues with green threads</p></div>
+</div><div class="slide" data-transition="none"><div class="content" ref="one/01_slide/7">
+<pre class="sh_ruby"><code>     # Green threads are easy to control!
+     while command = next_command do
+       case command
+         when :pause
+           Thread.stop
+           # ...
+
+      def unpause
+        @player_thread.run
+      end</code></pre>
+
+<p class="notes">roombox, a ruby music player daemon I wrote in 2004. Green threads greatly simplified the implementation.</p></div>
+</div><div class="slide" data-transition="none"><div class="content smbullets incremental" ref="one/01_slide/8">
+<h1>The Mongrel era</h1>
+
+<h2>Multiprocess</h2>
+
+<ul>
+<li>Multiple processes</li>
+<li>One thread per process</li>
+<li>Ensures isolation</li>
+<li>Uses all CPUs</li>
+<li>Gobbles RAM</li>
+</ul>
+
+
+<p class="notes">Once Rails started going into production, clustering implementations became the thing. Rails was single-threaded until 2.2</p></div>
+</div><div class="slide" data-transition="none"><div class="content smbullets incremental" ref="one/01_slide/9">
+<h1>Passenger</h1>
+
+<h2>Multiprocess + COW</h2>
+
+<ul>
+<li>Saves RAM through forking</li>
+<li>Requires custom garbage collector</li>
+<li>Prevents most effective GC methods</li>
+<li>Memory savings are limited</li>
+</ul>
+</div>
+</div><div class="slide" data-transition="none"><div class="content smbullets incremental" ref="one/01_slide/10">
+<h1>JRuby</h1>
+
+<h2>Real threads at last</h2>
+
+<ul>
+<li>Implemented Ruby threads on top of Java threads</li>
+<li>Java threads = OS threads</li>
+<li>No global locking</li>
+<li>Adoption slow</li>
+</ul>
+
+
+<p class="notes">Adoption was slow because Rails multithreading was imperfect, no commonly deployed app servers were threaded, people were scared of Java</p></div>
+</div><div class="slide" data-transition="none"><div class="content smbullets incremental" ref="one/01_slide/11">
+<h1>Ruby 1.9/YARV</h1>
+
+<h2>Real threads, with a catch</h2>
+
+<ul>
+<li>Implemented Ruby threads on top of OS threads</li>
+<li>Global interpreter lock prevents parallelism</li>
+<li>GIL is released during IO - <code>rb_thread_select</code></li>
+<li>Not all libraries properly release GIL</li>
+<li>Like <code>mysql</code> (but not <code>mysql2</code>)</li>
+</ul>
+
+
+<p class="notes">YARV threading not much faster than green threads, but the libraries have improved</p></div>
+</div><div class="slide" data-transition="none"><div class="content section" ref="one/01_slide/12">
+<h1>Concurrency Present</h1></div>
+</div><div class="slide" data-transition="none"><div class="content" ref="one/01_slide/13">
+<h1>Ruby threading today</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th/>
+      <th>OS threads?</th>
+      <th>GIL?</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>MRI 1.8</td>    <td>No</td>   <td>N/A</td>
+    </tr>
+    <tr>
+      <td>MRI 1.9</td>    <td>Yes</td>  <td>Yes</td>
+    </tr>
+    <tr>
+      <td>JRuby</td>      <td>Yes</td>  <td>No</td>
+    </tr>
+    <tr>
+      <td>Rubinius 1</td> <td>Yes</td>  <td>Yes</td>
+    </tr>
+    <tr>
+      <td>Rubinius 2</td> <td>Yes</td>  <td>No</td>
+    </tr>
+    <tr>
+      <td>MacRuby</td>    <td>Yes</td>  <td>No</td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+
+</div><div class="slide" data-transition="none"><div class="content smbullets" ref="one/01_slide/14">
+<h1>Threaded web servers</h1>
+
+<ul>
+<li>Puma</li>
+<li>Rainbows</li>
+<li>Trinidad (JRuby)</li>
+</ul>
+</div>
+</div><div class="slide" data-transition="none"><div class="content smbullets" ref="one/01_slide/15">
+<h1>Threading abstractions</h1>
+
+<ul>
+<li>Celluloid</li>
+<li>???</li>
+</ul>
+
+
+<p class="notes">And that leads us to...</p></div>
+</div><div class="slide" data-transition="none"><div class="content subsection" ref="one/01_slide/16">
+<h1>Concurrency Future</h1></div>
+</div><div class="slide" data-transition="none"><div class="content smbullets" ref="one/01_slide/17">
+<h1>Ruby stdlib threading</h1>
+
+<ul>
+<li><code>mutex</code></li>
+<li><code>monitor</code></li>
+<li><code>queue</code></li>
+<li><code>thwait</code></li>
+<li><code>gserver</code></li>
+</ul>
+</div>
+</div><div class="slide" data-transition="none"><div class="content smbullets" ref="one/01_slide/18">
+<h1>Can't we do better?</h1>
+
+<ul>
+<li>Puma, released in 2012, implements its own thread pool!</li>
+<li>Java has executors, transparent thread pooling, futures...</li>
+<li>Clojure has transactional memory, agents, futures, promises...</li>
+</ul>
+</div>
+</div><div class="slide" data-transition="none"><div class="content smbullets incremental" ref="one/01_slide/19">
+<h1>Ruby devs don't use threads...</h1>
+
+<ul>
+<li>... because they don't know they work well</li>
+<li>... because of long-standing FUD</li>
+<li>... because of evented IO hype</li>
+<li>... because of poor ecosystem support</li>
+</ul>
+</div>
+</div><div class="slide" data-transition="none"><div class="content smbullets" ref="one/01_slide/20">
+<h1>Poor ecosystem support</h1>
+
+<ul>
+<li>Non-threadsafe libraries</li>
+<li>Rails default is to prevent threading</li>
+<li>Few abstractions on top of Thread/Mutex</li>
+</ul>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="one/01_slide/21">
+<h1>What can we do?</h1>
+
+<h2>Documentation!</h2>
+
+<p>http://ruby.io</p></div>
+</div><div class="slide" data-transition="none"><div class="content" ref="one/01_slide/22">
+<h1>What can we do?</h1>
+
+<h2>Encourage library authors to write threadsafe code</h2></div>
+</div><div class="slide" data-transition="none"><div class="content smbullets" ref="one/01_slide/23">
+<h1>What can we do?</h1>
+
+<h2>Start building threading abstractions</h2>
+
+<ul>
+<li>Futures</li>
+<li>Executors</li>
+<li>Thread pools</li>
+<li>Actors (Celluloid)</li>
+<li>Develop a standard toolkit</li>
+</ul>
+</div>
+</div><div class="slide" data-transition="none"><div class="content subsection" ref="one/01_slide/24">
+<h1>Questions/Discussion</h1></div>
+</div></div>
+
+</body>
+</html>
